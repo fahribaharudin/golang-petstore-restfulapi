@@ -19,10 +19,21 @@ func (repo PetRepository) Store(data map[string]interface{}) (bool, error) {
 		TagID:      uint(data["tagID"].(float64)),
 	}
 
-	db := repo.DbHandler.Create(&pet)
-	if db.Error != nil {
-		return false, db.Error
+	dbc := repo.DbHandler.Create(&pet)
+	if dbc.Error != nil {
+		return false, dbc.Error
 	}
 
 	return true, nil
+}
+
+// GetLastRecord from the database
+func (repo *PetRepository) GetLastRecord() (models.Pet, error) {
+	pet := models.Pet{}
+	dbc := repo.DbHandler.Last(&pet)
+	if dbc.Error != nil {
+		return pet, dbc.Error
+	}
+
+	return pet, nil
 }

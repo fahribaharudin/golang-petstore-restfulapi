@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/fahribaharudin/petstore_restapi/app/models"
 	"github.com/fahribaharudin/petstore_restapi/app/repositories"
 )
 
@@ -18,4 +19,14 @@ func (s *PetService) StorePet(requestData map[string]interface{}) error {
 	}
 
 	return err
+}
+
+// GetLatestPet from repository
+func (s *PetService) GetLatestPet() (models.Pet, error) {
+	pet, err := s.PetRepository.GetLastRecord()
+	if err == nil {
+		return pet, nil
+	}
+
+	return pet, err
 }

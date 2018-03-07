@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/fahribaharudin/petstore_restapi/app/helpers"
@@ -41,15 +40,24 @@ func (c *PetController) Store(w http.ResponseWriter, r *http.Request) {
 
 	// store the pet
 	err = c.PetService.StorePet(validatedRequestData)
+	pet, err := c.PetService.GetLatestPet()
 	if err != nil {
-		w.WriteHeader(http.StatusServiceUnavailable)
-		w.Write([]byte(err.Error()))
-
+		helpers.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	output, _ := json.Marshal(validatedRequestData)
 
-	// write the data to response
-	w.Header().Set("content-type", "application/json")
-	w.Write(output)
+	// write success message to the response
+	helpers.WriteJSONResponse(w, http.StatusCreated, map[string]interface{}{
+		"code":    http.StatusCreated,
+		"message": "The pet was successfully created",
+		"data": map[string]interface{}{
+			"id":          pet.ID,
+			"name":        pet.Name,
+			"status":      pet.Status,
+			"category_id": pet.Status,
+			"tag_id":      pet.TagID,
+		},
+	})
+
+	return
 }

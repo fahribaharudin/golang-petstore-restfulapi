@@ -23,3 +23,17 @@ func WriteErrorResponse(w http.ResponseWriter, status int, message string) error
 
 	return nil
 }
+
+// WriteJSONResponse with http status and json conten
+func WriteJSONResponse(w http.ResponseWriter, status int, content map[string]interface{}) error {
+	output, err := json.Marshal(content)
+	if err != nil {
+		return err
+	}
+
+	w.Header().Set("content-type", "application/json")
+	w.WriteHeader(status)
+	w.Write([]byte(output))
+
+	return nil
+}
