@@ -1,0 +1,14 @@
+{
+    "app_name": "The petstore api",
+    "env": "dev",
+    "db": {
+        "development": {
+            "driver": "sqlite3",
+            "database": "./dev_db.sqlite"
+        },
+        "production": {
+            "driver": "mysql",
+            "database": "some database dsn here"
+        }
+    }
+}
