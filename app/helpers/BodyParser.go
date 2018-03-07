@@ -5,8 +5,16 @@ import (
 	"io"
 )
 
+// ResponseBodyHelper ..
+type ResponseBodyHelper struct{}
+
+// BodyParser create a response body helper object
+func BodyParser() ResponseBodyHelper {
+	return ResponseBodyHelper{}
+}
+
 // ParseJSON parsing json body data to a map containing request data
-func ParseJSON(requestBody io.Reader) (map[string]interface{}, error) {
+func (h ResponseBodyHelper) ParseJSON(requestBody io.Reader) (map[string]interface{}, error) {
 	var requestData map[string]interface{}
 
 	decoder := json.NewDecoder(requestBody)

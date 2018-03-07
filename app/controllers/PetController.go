@@ -15,9 +15,9 @@ type PetController struct {
 // Store is a handler to POST:/pet
 func (c *PetController) Store(w http.ResponseWriter, r *http.Request) {
 	// decode request data
-	requestData, err := helpers.ParseJSON(r.Body)
+	requestData, err := helpers.BodyParser().ParseJSON(r.Body)
 	if err != nil {
-		helpers.WriteErrorResponse(w, http.StatusBadRequest, "Invalid json request data.")
+		helpers.Response().WriteError(w, http.StatusBadRequest, "Invalid json request data.")
 		return
 	}
 
@@ -25,7 +25,7 @@ func (c *PetController) Store(w http.ResponseWriter, r *http.Request) {
 	inputToBeValidated := []string{"category_id", "name", "photoUrls", "tag_id", "status"}
 	valid, errorBag := helpers.ValidateRequiredMany(requestData, inputToBeValidated)
 	if !valid && len(errorBag) > 0 {
-		helpers.WriteErrorResponse(w, http.StatusBadRequest, errorBag[0].Error())
+		helpers.Response().WriteError(w, http.StatusBadRequest, errorBag[0].Error())
 		return
 	}
 
@@ -42,22 +42,27 @@ func (c *PetController) Store(w http.ResponseWriter, r *http.Request) {
 	err = c.PetService.StorePet(validatedRequestData)
 	pet, err := c.PetService.GetLatestPet()
 	if err != nil {
-		helpers.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		helpers.Response().WriteError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
+	// view model
+	type petVM struct {
+		ID         uint   `json:"id"`
+		Name       string `json:"name"`
+		Status     string `json:"status"`
+		CategoryID uint   `json:"category_id"`
+		TagID      uint   `json:"tag_id"`
+	}
+
 	// write success message to the response
-	helpers.WriteJSONResponse(w, http.StatusCreated, map[string]interface{}{
-		"code":    http.StatusCreated,
-		"message": "The pet was successfully created",
-		"data": map[string]interface{}{
-			"id":          pet.ID,
-			"name":        pet.Name,
-			"status":      pet.Status,
-			"category_id": pet.Status,
-			"tag_id":      pet.TagID,
-		},
-	})
+	helpers.Response().WriteJSON(w, http.StatusCreated, petVM{
+		ID:         pet.ID,
+		Name:       pet.Name,
+		Status:     pet.Status,
+		CategoryID: pet.CategoryID,
+		TagID:      pet.TagID,
+	}, "The pet was successfully created")
 
 	return
 }
