@@ -12,8 +12,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Container as the wrapper of the app components
-// inject all the components here..
+// Container of the controllers
 type Container struct {
 	PetController controllers.PetController
 }
@@ -67,4 +66,8 @@ func initCointainer() Container {
 	}
 
 	return container
+}
+
+func getContainer() *Container {
+	return &container
 }

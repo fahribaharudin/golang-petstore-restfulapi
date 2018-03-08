@@ -5,13 +5,6 @@ import (
 	"net/http"
 )
 
-// ViewModel is the default model to represent json response
-type ViewModel struct {
-	Message string      `json:"message"`
-	Code    int         `json:"code"`
-	Data    interface{} `json:"data"`
-}
-
 // ResponseHelper object
 type ResponseHelper struct {
 }
@@ -42,15 +35,24 @@ func (h ResponseHelper) WriteError(w http.ResponseWriter, status int, message st
 
 // WriteJSON response with http status and json content from map that will being marshaled
 func (h ResponseHelper) WriteJSON(w http.ResponseWriter, status int, content interface{}, msg string) error {
-	viewModel := ViewModel{}
+	var viewModel = struct {
+		Message string      `json:"message"`
+		Code    int         `json:"code"`
+		Data    interface{} `json:"data"`
+	}{
+		Message: msg,
+		Code:    status,
+		Data:    content,
+	}
+
 	output, err := json.Marshal(&viewModel)
 	if err != nil {
 		return err
 	}
 
 	w.Header().Set("content-type", "application/json")
-	w.Write([]byte(output))
 	w.WriteHeader(status)
+	w.Write([]byte(output))
 
 	return nil
 }

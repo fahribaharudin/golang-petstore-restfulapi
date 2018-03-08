@@ -12,7 +12,17 @@ type PetService struct {
 
 // StorePet service..
 func (s *PetService) StorePet(requestData map[string]interface{}) error {
-	success, err := s.PetRepository.Store(requestData)
+
+	// wrap the request data that has been validated
+	validatedRequestData := map[string]interface{}{
+		"categoryID": requestData["category_id"],
+		"name":       requestData["name"],
+		"photoUrls":  requestData["photoUrls"],
+		"tagID":      requestData["tag_id"],
+		"status":     requestData["status"],
+	}
+
+	success, err := s.PetRepository.Store(validatedRequestData)
 
 	if success {
 		return nil

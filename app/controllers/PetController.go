@@ -29,34 +29,22 @@ func (c *PetController) Store(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// wrap the request data that has been validated
-	validatedRequestData := map[string]interface{}{
-		"categoryID": requestData["category_id"],
-		"name":       requestData["name"],
-		"photoUrls":  requestData["photoUrls"],
-		"tagID":      requestData["tag_id"],
-		"status":     requestData["status"],
-	}
-
 	// store the pet
-	err = c.PetService.StorePet(validatedRequestData)
+	err = c.PetService.StorePet(requestData)
 	pet, err := c.PetService.GetLatestPet()
 	if err != nil {
 		helpers.Response().WriteError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	// view model
-	type petVM struct {
+	// write success message to the response
+	helpers.Response().WriteJSON(w, http.StatusCreated, struct {
 		ID         uint   `json:"id"`
 		Name       string `json:"name"`
 		Status     string `json:"status"`
 		CategoryID uint   `json:"category_id"`
 		TagID      uint   `json:"tag_id"`
-	}
-
-	// write success message to the response
-	helpers.Response().WriteJSON(w, http.StatusCreated, petVM{
+	}{
 		ID:         pet.ID,
 		Name:       pet.Name,
 		Status:     pet.Status,

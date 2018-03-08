@@ -10,6 +10,7 @@ import (
 func (r *RouterEngine) Register() {
 	// init gorilla mux as router engine
 	r.MuxRouter = mux.NewRouter()
+	container := getContainer()
 
 	r.MuxRouter.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("This is the petstore api.."))
